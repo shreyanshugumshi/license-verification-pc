@@ -15,18 +15,15 @@ def qr_capture():
     capture = cv2.VideoCapture(0)
     url_opened = False
     qr_data = None
-
     while True:
         success, frame = capture.read()
         if not success:
-            break
-
+            brea
         for qr_code in decode(frame):
             qr_data = qr_code.data.decode('utf-8')
             if not url_opened:
                 url_opened = True
             break
-
         cv2.imshow("QR CODE SCANNER", frame)
         if cv2.waitKey(1) & url_opened:
             break
@@ -39,7 +36,6 @@ def img_download(url, compare):
     soup = BeautifulSoup(response.text, 'html.parser')
     img_links = [img['src'] for img in soup.find_all('img') if 'src' in img.attrs]
     text_content = soup.get_text()
-
     if compare.lower() in text_content.lower():
         for link in img_links:
             if 'base64' in link:
@@ -56,22 +52,18 @@ def capture_zoomed_face():
     cap = cv2.VideoCapture(0)
     taking_picture = False
     start_time = None
-
     while True:
         ret, frame = cap.read()
         if not ret:
             break
-        
         gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
         faces = face_cascade.detectMultiScale(gray, scaleFactor=1.1, minNeighbors=5, minSize=(30, 30))
-
         if len(faces) > 0:
             for (x, y, w, h) in faces:
                 cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 255, 0), 2)
                 if not taking_picture:
                     taking_picture = True
                     start_time = time.time()
-
         if taking_picture:
             elapsed_time = time.time() - start_time
             if elapsed_time >= 2:
@@ -81,11 +73,9 @@ def capture_zoomed_face():
                     zoomed_filename = 'zoomed_face.jpg'
                     cv2.imwrite(zoomed_filename, zoomed_face)
                 break
-
         cv2.imshow('Face Detection', frame)
         if cv2.waitKey(1) & 0xFF == ord('q'):
             break
-
     cap.release()
     cv2.destroyAllWindows()
 
@@ -97,13 +87,10 @@ def find_face_encodings(image_path):
 def face_comparison(image_path):
     image_1 = find_face_encodings(image_path)
     image_2 = find_face_encodings('zoomed_face.jpg')
-
     if image_1 is None or image_2 is None:
         print("Could not find a face in one of the images.")
         return False
-
     is_same = face_recognition.compare_faces([image_1], image_2)[0]
-
     if is_same:
         distance = face_recognition.face_distance([image_1], image_2)[0]
         accuracy = 100 - round(distance * 100)
@@ -111,7 +98,6 @@ def face_comparison(image_path):
         print(f"Accuracy Level: {accuracy}%")
     else:
         print("The images are not the same")
-
     return is_same
 
 # Main execution
