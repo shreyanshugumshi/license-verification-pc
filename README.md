@@ -1,17 +1,17 @@
 # license-verification-pc
 this is the pc version of license verification where the user should scan the qr which is present behind their license and then facial recognition is used to compare the image in the qr data with the person in front of camera
 
-import cv2
-from pyzbar.pyzbar import decode
-import requests
-from bs4 import BeautifulSoup
-from PIL import Image
-import base64
-from io import BytesIO
-import face_recognition
-import time
+    import cv2
+    from pyzbar.pyzbar import decode
+    import requests
+    from bs4 import BeautifulSoup
+    from PIL import Image
+    import base64
+    from io import BytesIO
+    import face_recognition
+    import time
 
-def qr_capture():
+    def qr_capture():
     capture = cv2.VideoCapture(0)
     url_opened = False
     qr_data = None
@@ -31,7 +31,7 @@ def qr_capture():
     cv2.destroyAllWindows()
     return qr_data
 
-def img_download(url, compare):
+    def img_download(url, compare):
     response = requests.get(url)
     soup = BeautifulSoup(response.text, 'html.parser')
     img_links = [img['src'] for img in soup.find_all('img') if 'src' in img.attrs]
@@ -47,7 +47,7 @@ def img_download(url, compare):
                 return image_path
     return None
 
-def capture_zoomed_face():
+    def capture_zoomed_face():
     face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
     cap = cv2.VideoCapture(0)
     taking_picture = False
@@ -79,12 +79,12 @@ def capture_zoomed_face():
     cap.release()
     cv2.destroyAllWindows()
 
-def find_face_encodings(image_path):
+    def find_face_encodings(image_path):
     image = cv2.imread(image_path)
     face_enc = face_recognition.face_encodings(image)
     return face_enc[0] if face_enc else None
 
-def face_comparison(image_path):
+    def face_comparison(image_path):
     image_1 = find_face_encodings(image_path)
     image_2 = find_face_encodings('zoomed_face.jpg')
     if image_1 is None or image_2 is None:
@@ -100,11 +100,11 @@ def face_comparison(image_path):
         print("The images are not the same")
     return is_same
 
-# Main execution
-qr_data = qr_capture()
-compare_text = "lmv"
+    # Main execution
+    qr_data = qr_capture()
+    compare_text = "lmv"
 
-if qr_data:
+    if qr_data:
     image_path = img_download(qr_data, compare_text)
     if image_path:
         capture_zoomed_face()
@@ -115,5 +115,5 @@ if qr_data:
             print("Not eligible")
     else:
         print("Image not found or text did not match.")
-else:
+    else:
     print("QR code could not be scanned.")
